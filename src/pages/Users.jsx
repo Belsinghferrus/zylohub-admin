@@ -1,54 +1,53 @@
 import { useState } from "react";
+import UsersReportHeader from "../components/UsersReportHeader";
+import UsersFilter from "../components/UsersFilter";
+import UsersList from "../components/UsersList";
+import UsersAnalyticsChart from "../components/charts/UsersAnalyticsChart";
 import UsersReportChart from "../components/charts/UsersReportChart";
-import { useUserReportStore } from "../store/userReportStore";
 
 export default function Users() {
-  const { view, setView } = useUserReportStore();
-  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState("all");
 
-  const options = ["weekly", "monthly", "yearly"];
+  const users = [
+    { id: 1, name: "John Doe", role: "hoster", gender: "male", age: 32, location: "Chennai", rating: 4.5, image: "https://i.pravatar.cc/100?img=1" },
+    { id: 2, name: "Jane Smith", role: "seeker", gender: "female", age: 27, location: "Mumbai", rating: 4.2, image: "https://i.pravatar.cc/100?img=2" },
+    { id: 3, name: "Mike Johnson", role: "hoster", gender: "male", age: 40, location: "Delhi", rating: 4.8, image: "https://i.pravatar.cc/100?img=3" },
+  ];
 
-  const toggleDropdown = () => setOpen(!open);
-  const handleSelect = (option) => {
-    setView(option);
-    setOpen(false);
+  const filteredUsers = filter === "all" ? users : users.filter((u) => u.role === filter);
+
+  const total = users.length;
+  const hosters = users.filter((u) => u.role === "hoster").length;
+  const seekers = users.filter((u) => u.role === "seeker").length;
+
+  const analyticsData = {
+    all: Math.round((total / total) * 100),
+    hoster: Math.round((hosters / total) * 100),
+    seeker: Math.round((seekers / total) * 100),
   };
 
   return (
-    <div className="p-6 space-y-6 shadow-md">
-      {/* Heading */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Users Report</h1>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <UsersReportHeader />
 
-        {/* Dropdown Button */}
-        <div className="relative">
-          <button
-            onClick={toggleDropdown}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
-          >
-            {view.charAt(0).toUpperCase() + view.slice(1)} ▼
-          </button>
-
-          {open && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md border border-gray-200 z-50">
-              {options.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => handleSelect(option)}
-                  className={`w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 ${
-                    view === option ? "font-semibold text-indigo-600" : ""
-                  }`}
-                >
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Report Chart */}
+      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+        <UsersReportChart />
       </div>
 
-      {/* Chart */}
-      <UsersReportChart />
+      {/* List & Analytics Side by Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Users List Section */}
+        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 space-y-4 lg:col-span-2">
+          <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
+          <UsersFilter filter={filter} setFilter={setFilter} />
+          <UsersList users={filteredUsers} />
+        </div>
+
+        {/* Analytics Chart Section */}
+        <UsersAnalyticsChart data={analyticsData} />
+      </div>
     </div>
   );
 }
