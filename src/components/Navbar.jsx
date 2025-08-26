@@ -1,20 +1,42 @@
-import { FiSearch, FiBell } from "react-icons/fi";
-import { useLocation } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { FiSearch, FiSettings } from "react-icons/fi";
+import { useLocation, useNavigate } from "react-router-dom";
 import { sidebarOptions } from "../config/sidebarConfig";
+import useAuthStore from "../store/useAuthStore";
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
 
-  // Normalize and match either exact or child path
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Normalize and match route
   const normalizedPath = location.pathname.replace(/\/$/, "");
   const currentRoute =
     sidebarOptions.find(
       (item) =>
-        normalizedPath === item.path ||
-        normalizedPath.startsWith(item.path)
+        normalizedPath === item.path || normalizedPath.startsWith(item.path)
     ) || sidebarOptions[0];
 
   const Icon = currentRoute?.icon;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="h-16 px-6 flex items-center justify-between border-b border-gray-200 bg-white shadow-sm">
@@ -26,8 +48,8 @@ export default function Navbar() {
         </h2>
       </div>
 
-      {/* Right side: Search + Notifications + Profile */}
-      <div className="flex items-center gap-4">
+      {/* Right side: Search + Settings + Profile */}
+      <div className="flex items-center gap-4 relative">
         {/* Search Bar */}
         <div className="relative w-64 max-w-[40vw]">
           <input
@@ -38,20 +60,40 @@ export default function Navbar() {
           <FiSearch className="absolute left-3 top-3.5 text-gray-600" />
         </div>
 
-        {/* Notifications */}
-        <button className="relative text-gray-600 hover:text-gray-800">
-          <FiBell size={20} />
-          <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-            9+
-          </span>
+        {/* Settings Icon */}
+        <button className="text-gray-600 hover:text-gray-800">
+          <FiSettings size={20} />
         </button>
 
-        {/* Profile Image */}
-        <img
-          src="https://i.pravatar.cc/40"
-          alt="Profile"
-          className="h-10 w-10 rounded-full border-2 border-green-500"
-        />
+        {/* Profile Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <img
+            src="https://i.pravatar.cc/40"
+            alt="Profile"
+            className="h-10 w-10 rounded-full border-2 border-green-500 cursor-pointer"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+          />
+
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+              <button
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate("/dashboard/profile");
+                }}
+              >
+                Profile
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
