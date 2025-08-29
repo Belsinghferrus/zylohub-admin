@@ -8,10 +8,10 @@ export default function Jobs() {
 
   const stats = [
     { title: "Active", value: "120", change: "+12%", icon: Activity },
-    { title: "Request", value: "80", change: "-5%", icon: ClipboardList },
     { title: "Progress", value: "60", change: "+3%", icon: Loader },
     { title: "Completed", value: "200", change: "+20%", icon: CheckCircle },
-  ];
+    { title: "Report", value: "80", change: "-5%", icon: ClipboardList },
+  ];  
 
   return (
     <div className="p-6">

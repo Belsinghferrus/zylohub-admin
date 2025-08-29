@@ -11,53 +11,50 @@ import {
 
 const dataSets = {
   weekly: [
-    { name: "Mon", Active: 20, Progress: 25, Completed: 10, Report: 15 },
-    { name: "Tue", Active: 30, Progress: 20, Completed: 12, Report: 18 },
-    { name: "Wed", Active: 25, Progress: 30, Completed: 18, Report: 22 },
-    { name: "Thu", Active: 28, Progress: 22, Completed: 16, Report: 20 },
-    { name: "Fri", Active: 35, Progress: 28, Completed: 20, Report: 25 },
-    { name: "Sat", Active: 32, Progress: 30, Completed: 22, Report: 27 },
-    { name: "Sun", Active: 40, Progress: 35, Completed: 25, Report: 30 },
+    { name: "Mon", Request: 10, Arrived: 5, Confirmed: 3, Completed: 2 },
+    { name: "Tue", Request: 12, Arrived: 7, Confirmed: 5, Completed: 4 },
+    { name: "Wed", Request: 15, Arrived: 10, Confirmed: 6, Completed: 5 },
+    { name: "Thu", Request: 14, Arrived: 9, Confirmed: 7, Completed: 5 },
+    { name: "Fri", Request: 18, Arrived: 12, Confirmed: 9, Completed: 8 },
+    { name: "Sat", Request: 20, Arrived: 15, Confirmed: 11, Completed: 10 },
+    { name: "Sun", Request: 22, Arrived: 17, Confirmed: 13, Completed: 11 },
   ],
   monthly: Array.from({ length: 30 }, (_, i) => ({
     name: `Day ${i + 1}`,
-    Active: Math.floor(Math.random() * 50),
-    Progress: Math.floor(Math.random() * 60),
-    Completed: Math.floor(Math.random() * 30),
-    Report: Math.floor(Math.random() * 40),
+    Request: Math.floor(Math.random() * 30),
+    Arrived: Math.floor(Math.random() * 20),
+    Confirmed: Math.floor(Math.random() * 15),
+    Completed: Math.floor(Math.random() * 10),
   })),
   yearly: Array.from({ length: 12 }, (_, i) => ({
     name: `Month ${i + 1}`,
-    Active: Math.floor(Math.random() * 400),
-    Progress: Math.floor(Math.random() * 500),
-    Completed: Math.floor(Math.random() * 250),
-    Report: Math.floor(Math.random() * 300),
+    Request: Math.floor(Math.random() * 300),
+    Arrived: Math.floor(Math.random() * 200),
+    Confirmed: Math.floor(Math.random() * 150),
+    Completed: Math.floor(Math.random() * 100),
   })),
 };
 
-// enforce correct order everywhere
-const orderedKeys = ["Active", "Progress", "Completed", "Report"];
+const orderedKeys = ["Request", "Arrived", "Confirmed", "Completed"];
 const colors = {
-  Active: "#4F46E5",     // Indigo
-  Progress: "#10B981",   // Green
-  Completed: "#F59E0B",  // Amber
-  Report: "#EF4444",     // Red
+  Request: "#4F46E5",   // Indigo
+  Arrived: "#10B981",   // Green
+  Confirmed: "#F59E0B", // Amber
+  Completed: "#EF4444", // Red
 };
 
-export default function StatsChart({ highlighted }) {
+export default function RequestsChart({ highlighted }) {
   const [range, setRange] = useState("weekly");
 
-  // custom tooltip to preserve order
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload) return null;
 
-    // sort payload manually according to orderedKeys
     const sorted = orderedKeys
       .map((key) => payload.find((p) => p.dataKey === key))
       .filter(Boolean);
 
     return (
-      <div className="bg-white  rounded-md p-3 text-sm shadow-md">
+      <div className="bg-white shadow-md rounded-md p-3 text-sm ">
         <p className="font-semibold mb-1">{label}</p>
         {sorted.map((entry) => (
           <div
@@ -77,7 +74,9 @@ export default function StatsChart({ highlighted }) {
     <div className="bg-white shadow rounded-2xl p-6 mt-8">
       {/* Range Selector */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-700">Jobs Overview</h2>
+        <h2 className="text-lg font-semibold text-gray-700">
+          Job Requests Overview
+        </h2>
         <div className="space-x-2">
           {["weekly", "monthly", "yearly"].map((r) => (
             <button
