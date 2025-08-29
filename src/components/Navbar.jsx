@@ -12,15 +12,27 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Normalize and match route
-  const normalizedPath = location.pathname.replace(/\/$/, "");
+  // Normalize current path (remove query, hash, and trailing slash)
+  const normalizedPath = location.pathname
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/\/$/, "");
+
+  // Sort routes by path length for better specificity
+  const sortedRoutes = [...sidebarOptions].sort(
+    (a, b) => b.path.length - a.path.length
+  );
+
+  // Find the best-matching route
   const currentRoute =
-    sidebarOptions.find(
-      (item) =>
-        normalizedPath === item.path || normalizedPath.startsWith(item.path)
-    ) || sidebarOptions[0];
+    sortedRoutes.find((item) => normalizedPath.startsWith(item.path)) ||
+    sidebarOptions[0];
 
   const Icon = currentRoute?.icon;
+
+  // Debugging logs
+  // console.log("Current Path:", normalizedPath);
+  // console.log("Matched Route:", currentRoute);
 
   // Close dropdown when clicking outside
   useEffect(() => {
