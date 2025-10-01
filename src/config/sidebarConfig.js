@@ -9,6 +9,7 @@ import {
   FiMessageSquare,
   FiAlertTriangle,
   FiFlag,
+  FiUser,   // ✅ import user icon
 } from "react-icons/fi";
 
 export const sidebarOptions = [
@@ -29,4 +30,5 @@ export const sidebarOptions = [
   { name: "Feedbacks", path: "/dashboard/feedbacks", icon: FiMessageSquare },
   { name: "SOS", path: "/dashboard/sos", icon: FiAlertTriangle },
   { name: "Report", path: "/dashboard/report", icon: FiFlag },
+  { name: "Profile", path: "/dashboard/profile", icon: FiUser }, // ✅ Added Profile
 ];
